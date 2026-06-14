@@ -1,0 +1,406 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Détail Produit - AutoParts Pro</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <nav class="navbar" id="navbar">
+      <div class="nav-container">
+        <a href="index.html" class="nav-logo">
+          <div class="logo-icon">🔧</div>
+          <div class="logo-text">Auto<span>Parts</span> Pro</div>
+        </a>
+        <ul class="nav-links">
+          <li><a href="index.html">Accueil</a></li>
+          <li><a href="shop.html" class="active">Boutique</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul>
+        <div class="nav-actions">
+          <a href="cart.html" class="nav-icon-btn"
+            >🛒<span class="cart-count" style="display: none">0</span></a
+          >
+        </div>
+        <div class="hamburger" id="hamburger">
+          <span></span><span></span><span></span>
+        </div>
+      </div>
+      <div class="mobile-menu" id="mobile-menu">
+        <a href="index.html">🏠 Accueil</a>
+        <a href="shop.html">🛒 Boutique</a>
+        <a href="cart.html">🛒 Mon Panier</a>
+      </div>
+    </nav>
+
+    <!-- BREADCRUMB -->
+    <div
+      style="
+        background: var(--black-mid);
+        padding: 56px 0 16px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      "
+    >
+      <div class="container">
+        <div class="breadcrumb" style="justify-content: flex-start">
+          <a href="index.html">Accueil</a>
+          <span>›</span>
+          <a href="shop.html">Boutique</a>
+          <span>›</span>
+          <span id="bc-cat">Catégorie</span>
+          <span>›</span>
+          <span id="bc-name" style="color: white">Produit</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="product-detail-layout" id="product-detail">
+        <div class="spinner"></div>
+      </div>
+    </div>
+
+    <!-- RELATED PRODUCTS -->
+    <section
+      class="products-section"
+      style="background: var(--black-mid); margin-top: 60px"
+    >
+      <div class="container">
+        <div class="section-header">
+          <h2 class="section-title">Produits <span>Similaires</span></h2>
+          <p class="section-subtitle">Vous pourriez aussi aimer</p>
+        </div>
+        <div class="products-grid" id="related-grid"></div>
+      </div>
+    </section>
+
+    <!-- REVIEWS SECTION -->
+    <section style="padding: 60px 0; background: var(--black)">
+      <div class="container" style="max-width: 860px">
+        <div
+          class="section-header"
+          style="text-align: left; margin-bottom: 32px"
+        >
+          <h2 class="section-title">Avis <span>Clients</span></h2>
+        </div>
+        <div id="reviews-container"></div>
+        <!-- Add review form -->
+        <div
+          style="
+            background: var(--black-card);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: var(--radius-lg);
+            padding: 28px;
+            margin-top: 32px;
+          "
+        >
+          <h3
+            style="
+              font-family: var(--font-display);
+              font-weight: 700;
+              font-size: 1.1rem;
+              text-transform: uppercase;
+              margin-bottom: 20px;
+            "
+          >
+            ✍️ Laisser un avis
+          </h3>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Votre nom</label
+              ><input
+                type="text"
+                class="form-input"
+                placeholder="Jean Dupont"
+              />
+            </div>
+            <div class="form-group">
+              <label>Note</label>
+              <select class="form-input" id="review-rating">
+                <option value="5">⭐⭐⭐⭐⭐ Excellent</option>
+                <option value="4">⭐⭐⭐⭐ Très bien</option>
+                <option value="3">⭐⭐⭐ Bien</option>
+                <option value="2">⭐⭐ Moyen</option>
+                <option value="1">⭐ Mauvais</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Votre commentaire</label
+            ><textarea
+              class="form-input"
+              placeholder="Partagez votre expérience avec ce produit..."
+              rows="4"
+            ></textarea>
+          </div>
+          <button class="btn btn-primary" onclick="submitReview(event)">
+            Publier l'avis
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div class="footer-bottom">
+        <div class="container">
+          <div class="footer-bottom-inner">
+            <p class="footer-copy">
+              © 2025 <span>AutoParts Pro</span>. Tous droits réservés.
+            </p>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <script src="main.js"></script>
+    <script>
+      function getProductId() {
+        return (
+          parseInt(new URLSearchParams(window.location.search).get("id")) || 1
+        );
+      }
+
+      function renderStars(rating) {
+        let html = "";
+        for (let i = 1; i <= 5; i++) {
+          if (i <= Math.floor(rating)) html += "★";
+          else if (i - 0.5 <= rating) html += "⯨";
+          else html += "☆";
+        }
+        return html;
+      }
+
+      function renderProductDetail(product) {
+        const detail = document.getElementById("product-detail");
+        const cat = CATEGORIES.find((c) => c.id === product.cat);
+        const discount = product.oldPrice
+          ? Math.round((1 - product.price / product.oldPrice) * 100)
+          : 0;
+
+        // Breadcrumb
+        document.getElementById("bc-cat").textContent =
+          cat?.name || product.cat;
+        document.getElementById("bc-name").textContent = product.name;
+        document.title = `${product.name} - AutoParts Pro`;
+
+        detail.innerHTML = `
+    <!-- GALLERY -->
+    <div class="product-gallery">
+      <div class="gallery-main" id="gallery-main">
+        <div style="font-size:9rem">${product.emoji}</div>
+        <div style="position:absolute;bottom:12px;right:12px;display:flex;gap:6px">
+          ${product.badge ? `<span class="badge badge-red">${product.badge}</span>` : ""}
+          ${discount > 0 ? `<span class="badge badge-orange">-${discount}%</span>` : ""}
+        </div>
+      </div>
+      <div class="gallery-thumbs">
+        <div class="gallery-thumb active">${product.emoji}</div>
+        <div class="gallery-thumb" style="font-size:2rem;color:var(--gray-dark)">🔍</div>
+        <div class="gallery-thumb" style="font-size:2rem;color:var(--gray-dark)">📐</div>
+        <div class="gallery-thumb" style="font-size:2rem;color:var(--gray-dark)">📦</div>
+      </div>
+    </div>
+
+    <!-- INFO -->
+    <div class="product-detail-info">
+      <div class="product-detail-cat">${cat?.icon || ""} ${product.subcat}</div>
+      <h1 class="product-detail-name">${product.name}</h1>
+      <div class="product-detail-rating">
+        <span style="color:#FFB300;font-size:1.2rem">${renderStars(product.rating)}</span>
+        <span style="font-family:var(--font-display);font-weight:700;font-size:1rem">${product.rating}</span>
+        <span style="color:var(--gray-dark);font-size:0.9rem">(${product.reviews} avis)</span>
+        <span class="badge badge-green" style="margin-left:8px">Certifié OEM</span>
+      </div>
+
+      <div class="product-detail-price">
+        <span class="price-main">${product.price.toFixed(2)} €</span>
+        ${product.oldPrice ? `<span class="price-old">${product.oldPrice.toFixed(2)} €</span>` : ""}
+        ${discount > 0 ? `<span class="price-saving">Économisez ${discount}%</span>` : ""}
+      </div>
+
+      <p style="color:var(--text-light);line-height:1.7;margin-bottom:20px">${product.desc}</p>
+
+      <hr class="product-detail-divider">
+
+      <div class="detail-meta-row">
+        <div class="detail-meta-item">
+          <label>Référence</label>
+          <span style="color:var(--red)">${product.ref}</span>
+        </div>
+        <div class="detail-meta-item">
+          <label>Disponibilité</label>
+          <span style="color:${product.stock > 5 ? "#4CAF50" : product.stock > 0 ? "#FF9800" : "#F44336"}">
+            ${product.stock === 0 ? "❌ Rupture" : product.stock < 5 ? `⚠️ ${product.stock} en stock` : `✅ ${product.stock} en stock`}
+          </span>
+        </div>
+        <div class="detail-meta-item">
+          <label>Catégorie</label>
+          <span><a href="shop.html?cat=${product.cat}" style="color:var(--red)">${cat?.name}</a></span>
+        </div>
+      </div>
+
+      <hr class="product-detail-divider">
+
+      <div style="margin-bottom:20px">
+        <div style="font-family:var(--font-display);font-weight:700;font-size:0.9rem;text-transform:uppercase;color:var(--gray-dark);margin-bottom:12px">🚗 Compatibilité véhicule</div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px">
+          ${product.compat.map((c) => `<span style="padding:4px 14px;background:rgba(229,57,53,0.1);border:1px solid rgba(229,57,53,0.2);border-radius:20px;font-size:0.82rem;color:var(--red-light)">${c}</span>`).join("")}
+        </div>
+      </div>
+
+      <hr class="product-detail-divider">
+
+      <div style="display:flex;align-items:center;gap:16px;padding:16px;background:rgba(76,175,80,0.08);border:1px solid rgba(76,175,80,0.15);border-radius:var(--radius);margin-bottom:20px">
+        <span style="font-size:1.5rem">🚚</span>
+        <div>
+          <div style="font-weight:600;font-size:0.9rem">Livraison gratuite</div>
+          <div style="font-size:0.82rem;color:var(--gray-dark)">Pour toute commande supérieure à 100€ · Expédié sous 24h</div>
+        </div>
+      </div>
+
+      <div class="add-cart-row">
+        <div class="qty-selector">
+          <button onclick="changeQty(-1)">−</button>
+          <input type="number" id="qty-input" value="1" min="1" max="${product.stock || 1}">
+          <button onclick="changeQty(1)">+</button>
+        </div>
+        <button class="btn btn-primary" style="flex:1;padding:16px" onclick="addToCartDetail(${product.id})" ${product.stock === 0 ? "disabled" : ""}>
+          🛒 Ajouter au panier
+        </button>
+        <button class="nav-icon-btn" style="width:50px;height:50px;font-size:1.3rem" title="Ajouter aux favoris" onclick="this.textContent='♥';this.style.background='var(--red)'">♡</button>
+      </div>
+
+      <div style="display:flex;gap:12px;margin-top:16px;flex-wrap:wrap">
+        <div style="display:flex;align-items:center;gap:6px;font-size:0.82rem;color:var(--gray-dark)">🛡️ Garantie 2 ans</div>
+        <div style="display:flex;align-items:center;gap:6px;font-size:0.82rem;color:var(--gray-dark)">↩️ Retour 30 jours</div>
+        <div style="display:flex;align-items:center;gap:6px;font-size:0.82rem;color:var(--gray-dark)">✅ Certifié qualité</div>
+        <div style="display:flex;align-items:center;gap:6px;font-size:0.82rem;color:var(--gray-dark)">🔒 Paiement sécurisé</div>
+      </div>
+    </div>
+  `;
+
+        // Gallery thumb click
+        document.querySelectorAll(".gallery-thumb").forEach((t, i) => {
+          t.addEventListener("click", function () {
+            document
+              .querySelectorAll(".gallery-thumb")
+              .forEach((tt) => tt.classList.remove("active"));
+            this.classList.add("active");
+          });
+        });
+      }
+
+      window.changeQty = function (delta) {
+        const input = document.getElementById("qty-input");
+        const val = parseInt(input.value) + delta;
+        if (val >= 1 && val <= parseInt(input.max)) input.value = val;
+      };
+
+      window.addToCartDetail = function (id) {
+        const qty = parseInt(document.getElementById("qty-input").value);
+        for (let i = 0; i < qty; i++) Cart.add(id, 1);
+      };
+
+      function renderReviews(product) {
+        const sampleReviews = [
+          {
+            name: "Ahmed B.",
+            car: "Toyota Yaris 2021",
+            rating: 5,
+            date: "12/05/2025",
+            text: "Pièce parfaite, compatible à 100%. Montage facile et fonctionnement impeccable.",
+          },
+          {
+            name: "Fatima Z.",
+            car: "Peugeot 208 2020",
+            rating: 4,
+            date: "08/04/2025",
+            text: "Bonne qualité, livraison rapide. Petit bémol sur l'emballage mais rien de grave.",
+          },
+          {
+            name: "Karim M.",
+            car: "BMW Série 1 2019",
+            rating: 5,
+            date: "22/03/2025",
+            text: "Exactement comme l'originale. Je reviendrai !",
+          },
+        ];
+
+        const container = document.getElementById("reviews-container");
+        const avgRating = (
+          sampleReviews.reduce((s, r) => s + r.rating, 0) / sampleReviews.length
+        ).toFixed(1);
+
+        let html = `
+    <div style="display:flex;gap:40px;align-items:center;background:var(--black-card);border:1px solid rgba(255,255,255,0.06);border-radius:var(--radius-lg);padding:28px;margin-bottom:24px">
+      <div style="text-align:center">
+        <div style="font-family:var(--font-display);font-size:4rem;font-weight:900;color:var(--red);line-height:1">${avgRating}</div>
+        <div style="color:#FFB300;font-size:1.5rem">${renderStars(parseFloat(avgRating))}</div>
+        <div style="font-size:0.85rem;color:var(--gray-dark);margin-top:4px">${product.reviews} avis</div>
+      </div>
+      <div style="flex:1">
+        ${[5, 4, 3, 2, 1]
+          .map((n) => {
+            const cnt =
+              n === 5 ? 70 : n === 4 ? 20 : n === 3 ? 7 : n === 2 ? 2 : 1;
+            return `<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+            <span style="font-size:0.85rem;width:20px;color:#FFB300">${n}★</span>
+            <div style="flex:1;height:8px;background:rgba(255,255,255,0.06);border-radius:4px;overflow:hidden">
+              <div style="height:100%;background:var(--red);border-radius:4px;width:${cnt}%"></div>
+            </div>
+            <span style="font-size:0.78rem;color:var(--gray-dark);width:30px">${cnt}%</span>
+          </div>`;
+          })
+          .join("")}
+      </div>
+    </div>`;
+
+        html += sampleReviews
+          .map(
+            (r) => `
+    <div style="background:var(--black-card);border:1px solid rgba(255,255,255,0.06);border-radius:var(--radius-lg);padding:24px;margin-bottom:16px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px">
+        <div style="display:flex;align-items:center;gap:12px">
+          <div style="width:42px;height:42px;background:var(--red);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:700">${r.name[0]}</div>
+          <div>
+            <div style="font-weight:600">${r.name}</div>
+            <div style="font-size:0.8rem;color:var(--gray-dark)">${r.car}</div>
+          </div>
+        </div>
+        <div style="text-align:right">
+          <div style="color:#FFB300">${"★".repeat(r.rating)}${"☆".repeat(5 - r.rating)}</div>
+          <div style="font-size:0.78rem;color:var(--gray-dark)">${r.date}</div>
+        </div>
+      </div>
+      <p style="color:var(--text-light);font-size:0.9rem;line-height:1.6;font-style:italic">"${r.text}"</p>
+    </div>`,
+          )
+          .join("");
+
+        container.innerHTML = html;
+      }
+
+      window.submitReview = function (e) {
+        showNotification(
+          "✅ Avis publié",
+          "Merci pour votre retour !",
+          "success",
+        );
+      };
+
+      document.addEventListener("DOMContentLoaded", () => {
+        const id = getProductId();
+        const product = PRODUCTS.find((p) => p.id === id) || PRODUCTS[0];
+        renderProductDetail(product);
+        renderReviews(product);
+
+        // Related products
+        const related = PRODUCTS.filter(
+          (p) => p.cat === product.cat && p.id !== product.id,
+        ).slice(0, 4);
+        renderProducts("related-grid", related);
+      });
+    </script>
+  </body>
+</html>

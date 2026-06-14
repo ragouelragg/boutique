@@ -1,0 +1,902 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Boutique - AutoParts Pro</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <!-- NAVBAR -->
+    <nav class="navbar" id="navbar">
+      <div class="nav-container">
+        <a href="index.html" class="nav-logo">
+          <div class="logo-icon">🔧</div>
+          <div class="logo-text">Auto<span>Parts</span> Pro</div>
+        </a>
+        <ul class="nav-links">
+          <li><a href="index.html">Accueil</a></li>
+          <li><a href="shop.html" class="active">Boutique</a></li>
+          <li><a href="shop.html?section=categories">Catégories</a></li>
+          <li><a href="shop.html?section=compat">Compatibilité</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul>
+        <div class="nav-actions">
+          <a href="cart.html" class="nav-icon-btn"
+            >🛒<span class="cart-count" style="display: none">0</span></a
+          >
+          <a
+            href="admin/index.html"
+            class="btn btn-primary btn-sm"
+            style="margin-left: 8px"
+            >Admin</a
+          >
+        </div>
+        <div class="hamburger" id="hamburger">
+          <span></span><span></span><span></span>
+        </div>
+      </div>
+      <div class="mobile-menu" id="mobile-menu">
+        <a href="index.html">🏠 Accueil</a>
+        <a href="shop.html">🛒 Boutique</a>
+        <a href="contact.html">📞 Contact</a>
+        <a href="cart.html">🛒 Mon Panier</a>
+      </div>
+    </nav>
+
+    <!-- PAGE HEADER -->
+    <div class="page-header" id="page-header">
+      <div class="page-header-content container">
+        <h1 class="page-title" id="page-title">Notre <span>Boutique</span></h1>
+        <div class="breadcrumb">
+          <a href="index.html">Accueil</a>
+          <span>›</span>
+          <span id="breadcrumb-current">Boutique</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTIONS NAV -->
+    <div
+      style="
+        background: var(--black-mid);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+        padding: 12px 0;
+        overflow-x: auto;
+      "
+    >
+      <div
+        class="container"
+        style="
+          display: flex;
+          gap: 8px;
+          align-items: center;
+          flex-wrap: nowrap;
+          min-width: max-content;
+        "
+      >
+        <button
+          class="subcat-chip active"
+          onclick="switchSection('shop')"
+          id="tab-shop"
+        >
+          🛒 Tous les produits
+        </button>
+        <button
+          class="subcat-chip"
+          onclick="switchSection('categories')"
+          id="tab-categories"
+        >
+          📂 Catégories
+        </button>
+        <button
+          class="subcat-chip"
+          onclick="switchSection('compat')"
+          id="tab-compat"
+        >
+          🚗 Par véhicule
+        </button>
+      </div>
+    </div>
+
+    <!-- ===== SECTION: SHOP ===== -->
+    <div id="section-shop" style="display: block">
+      <div class="container">
+        <div class="shop-layout">
+          <!-- SIDEBAR -->
+          <aside class="sidebar">
+            <div class="sidebar-section">
+              <div class="sidebar-title">🔍 Recherche</div>
+              <div class="search-box" style="margin-bottom: 0">
+                <span class="search-icon">🔍</span>
+                <input
+                  type="text"
+                  id="sidebar-search"
+                  placeholder="Nom, référence..."
+                />
+              </div>
+            </div>
+            <div class="sidebar-section">
+              <div class="sidebar-title">📂 Catégories</div>
+              <div id="cat-filters"></div>
+            </div>
+            <div class="sidebar-section">
+              <div class="sidebar-title">💰 Prix (€)</div>
+              <div class="price-range">
+                <input
+                  type="range"
+                  class="range-input"
+                  id="price-max"
+                  min="0"
+                  max="300"
+                  value="300"
+                  step="5"
+                />
+                <div class="range-labels">
+                  <span>0 €</span>
+                  <span id="price-val">300 €</span>
+                </div>
+              </div>
+            </div>
+            <div class="sidebar-section">
+              <div class="sidebar-title">📦 Disponibilité</div>
+              <div class="filter-option">
+                <input type="checkbox" id="filter-stock" checked />
+                <label for="filter-stock">En stock uniquement</label>
+              </div>
+            </div>
+            <div class="sidebar-section">
+              <div class="sidebar-title">⭐ Note minimum</div>
+              <select
+                id="filter-rating"
+                style="
+                  width: 100%;
+                  background: var(--black-mid);
+                  border: 1px solid rgba(255, 255, 255, 0.1);
+                  border-radius: var(--radius);
+                  padding: 10px 12px;
+                  color: white;
+                  font-family: var(--font-body);
+                  outline: none;
+                "
+              >
+                <option value="0">Toutes</option>
+                <option value="4">4+ étoiles</option>
+                <option value="4.5">4.5+ étoiles</option>
+              </select>
+            </div>
+            <button
+              class="btn btn-primary btn-full"
+              id="apply-filters"
+              style="margin-top: 8px"
+            >
+              Appliquer les filtres
+            </button>
+            <button
+              class="btn btn-dark btn-full"
+              id="reset-filters"
+              style="margin-top: 8px"
+            >
+              Réinitialiser
+            </button>
+          </aside>
+
+          <!-- MAIN SHOP -->
+          <main>
+            <!-- Mobile search -->
+            <div
+              style="display: none"
+              class="mobile-shop-search"
+              id="mobile-shop-search"
+            >
+              <div class="search-box" style="margin-bottom: 16px">
+                <span class="search-icon">🔍</span>
+                <input
+                  type="text"
+                  id="mobile-search"
+                  placeholder="Rechercher une pièce..."
+                />
+              </div>
+            </div>
+
+            <!-- Category header (shown when cat selected) -->
+            <div
+              id="category-header-card"
+              style="display: none"
+              class="category-header-card"
+            >
+              <div class="cat-header-icon" id="cat-hdr-icon">🔧</div>
+              <div class="cat-header-info">
+                <h2 id="cat-hdr-name">Moteur</h2>
+                <p id="cat-hdr-desc">Trouvez les meilleures pièces moteur</p>
+                <div class="subcats-grid" id="subcats-list"></div>
+              </div>
+            </div>
+
+            <!-- Toolbar -->
+            <div class="shop-toolbar">
+              <div class="results-count">
+                <span id="results-num">0</span> produits trouvés
+              </div>
+              <div
+                style="
+                  display: flex;
+                  gap: 12px;
+                  align-items: center;
+                  flex-wrap: wrap;
+                "
+              >
+                <select class="sort-select" id="sort-select">
+                  <option value="popular">Plus populaires</option>
+                  <option value="rating">Meilleures notes</option>
+                  <option value="price-asc">Prix croissant</option>
+                  <option value="price-desc">Prix décroissant</option>
+                  <option value="newest">Nouveautés</option>
+                </select>
+                <div class="view-toggle">
+                  <button class="view-btn active" id="view-grid" title="Grille">
+                    ⊞
+                  </button>
+                  <button class="view-btn" id="view-list" title="Liste">
+                    ☰
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Products -->
+            <div class="products-grid" id="shop-grid"></div>
+
+            <!-- Pagination -->
+            <div
+              id="pagination"
+              style="
+                display: flex;
+                justify-content: center;
+                gap: 8px;
+                margin-top: 40px;
+                flex-wrap: wrap;
+              "
+            ></div>
+          </main>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== SECTION: CATEGORIES ===== -->
+    <div id="section-categories" style="display: none">
+      <div class="container" style="padding: 60px 24px">
+        <div class="section-header">
+          <h2 class="section-title">Toutes les <span>Catégories</span></h2>
+          <p class="section-subtitle">
+            Sélectionnez une catégorie pour voir ses produits
+          </p>
+        </div>
+        <div
+          style="
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 24px;
+          "
+          id="all-cats-grid"
+        ></div>
+      </div>
+    </div>
+
+    <!-- ===== SECTION: COMPATIBILITY ===== -->
+    <div id="section-compat" style="display: none">
+      <div class="container" style="padding: 60px 24px">
+        <div class="section-header">
+          <h2 class="section-title">Recherche par <span>Véhicule</span></h2>
+          <p class="section-subtitle">
+            Entrez les informations de votre véhicule pour trouver les pièces
+            compatibles
+          </p>
+        </div>
+        <div style="max-width: 800px; margin: 0 auto">
+          <div
+            style="
+              background: var(--black-card);
+              border: 1px solid rgba(255, 255, 255, 0.06);
+              border-radius: var(--radius-lg);
+              padding: 40px;
+              margin-bottom: 40px;
+            "
+          >
+            <div
+              style="
+                display: grid;
+                grid-template-columns: 1fr 1fr 1fr 1fr;
+                gap: 16px;
+                margin-bottom: 24px;
+              "
+            >
+              <div>
+                <label
+                  style="
+                    display: block;
+                    font-size: 0.8rem;
+                    color: var(--gray-dark);
+                    text-transform: uppercase;
+                    letter-spacing: 0.5px;
+                    margin-bottom: 8px;
+                    font-weight: 600;
+                  "
+                  >Marque</label
+                >
+                <select
+                  class="finder-select"
+                  id="compat-brand"
+                  style="
+                    width: 100%;
+                    height: 50px;
+                    background: var(--black-mid);
+                    color: white;
+                    border: 1px solid rgba(255, 255, 255, 0.1);
+                    border-radius: var(--radius);
+                    padding: 0 12px;
+                    outline: none;
+                  "
+                >
+                  <option value="">Choisir...</option>
+                </select>
+              </div>
+              <div>
+                <label
+                  style="
+                    display: block;
+                    font-size: 0.8rem;
+                    color: var(--gray-dark);
+                    text-transform: uppercase;
+                    letter-spacing: 0.5px;
+                    margin-bottom: 8px;
+                    font-weight: 600;
+                  "
+                  >Modèle</label
+                >
+                <select
+                  class="finder-select"
+                  id="compat-model"
+                  style="
+                    width: 100%;
+                    height: 50px;
+                    background: var(--black-mid);
+                    color: white;
+                    border: 1px solid rgba(255, 255, 255, 0.1);
+                    border-radius: var(--radius);
+                    padding: 0 12px;
+                    outline: none;
+                  "
+                >
+                  <option value="">Choisir...</option>
+                </select>
+              </div>
+              <div>
+                <label
+                  style="
+                    display: block;
+                    font-size: 0.8rem;
+                    color: var(--gray-dark);
+                    text-transform: uppercase;
+                    letter-spacing: 0.5px;
+                    margin-bottom: 8px;
+                    font-weight: 600;
+                  "
+                  >Année</label
+                >
+                <select
+                  class="finder-select"
+                  id="compat-year"
+                  style="
+                    width: 100%;
+                    height: 50px;
+                    background: var(--black-mid);
+                    color: white;
+                    border: 1px solid rgba(255, 255, 255, 0.1);
+                    border-radius: var(--radius);
+                    padding: 0 12px;
+                    outline: none;
+                  "
+                >
+                  <option value="">Choisir...</option>
+                </select>
+              </div>
+              <div>
+                <label
+                  style="
+                    display: block;
+                    font-size: 0.8rem;
+                    color: var(--gray-dark);
+                    text-transform: uppercase;
+                    letter-spacing: 0.5px;
+                    margin-bottom: 8px;
+                    font-weight: 600;
+                  "
+                  >Catégorie</label
+                >
+                <select
+                  class="finder-select"
+                  id="compat-cat"
+                  style="
+                    width: 100%;
+                    height: 50px;
+                    background: var(--black-mid);
+                    color: white;
+                    border: 1px solid rgba(255, 255, 255, 0.1);
+                    border-radius: var(--radius);
+                    padding: 0 12px;
+                    outline: none;
+                  "
+                >
+                  <option value="">Toutes</option>
+                </select>
+              </div>
+            </div>
+            <button
+              class="btn btn-primary btn-full"
+              id="compat-search-btn"
+              style="font-size: 1.1rem; padding: 16px"
+            >
+              🔍 Trouver les pièces compatibles
+            </button>
+          </div>
+          <div id="compat-results" class="products-grid"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="footer" style="margin-top: 60px">
+      <div class="footer-bottom">
+        <div class="container">
+          <div class="footer-bottom-inner">
+            <p class="footer-copy">
+              © 2025 <span>AutoParts Pro</span>. Tous droits réservés.
+            </p>
+            <div style="display: flex; gap: 8px">
+              <a
+                href="index.html"
+                style="color: var(--gray-dark); font-size: 0.85rem"
+                >Accueil</a
+              >
+              <span style="color: var(--gray-dark)">|</span>
+              <a
+                href="contact.html"
+                style="color: var(--gray-dark); font-size: 0.85rem"
+                >Contact</a
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <script src="main.js"></script>
+    <script>
+      // State
+      let currentCat = "";
+      let currentSubcat = "";
+      let currentQuery = "";
+      let currentSort = "popular";
+      let maxPrice = 300;
+      let stockOnly = true;
+      let minRating = 0;
+      const PAGE_SIZE = 8;
+      let currentPage = 1;
+
+      function switchSection(section) {
+        ["shop", "categories", "compat"].forEach((s) => {
+          document.getElementById(`section-${s}`).style.display =
+            s === section ? "block" : "none";
+          const tab = document.getElementById(`tab-${s}`);
+          if (tab) tab.classList.toggle("active", s === section);
+        });
+      }
+
+      // Parse URL params
+      function getParams() {
+        const p = new URLSearchParams(window.location.search);
+        return {
+          cat: p.get("cat") || "",
+          q: p.get("q") || "",
+          brand: p.get("brand") || "",
+          model: p.get("model") || "",
+          year: p.get("year") || "",
+          section: p.get("section") || "shop",
+        };
+      }
+
+      // Build category sidebar
+      function buildCatFilters() {
+        const container = document.getElementById("cat-filters");
+        let html = `<div class="filter-option">
+    <input type="checkbox" id="cat-all" ${!currentCat ? "checked" : ""}>
+    <label for="cat-all">Toutes</label>
+    <span class="filter-count">${PRODUCTS.length}</span>
+  </div>`;
+        CATEGORIES.forEach((cat) => {
+          html += `<div class="filter-option">
+      <input type="checkbox" id="cat-${cat.id}" class="cat-filter" data-cat="${cat.id}" ${currentCat === cat.id ? "checked" : ""}>
+      <label for="cat-${cat.id}">${cat.icon} ${cat.name}</label>
+      <span class="filter-count">${cat.count}</span>
+    </div>`;
+        });
+        container.innerHTML = html;
+
+        document
+          .getElementById("cat-all")
+          .addEventListener("change", function () {
+            if (this.checked) {
+              currentCat = "";
+              currentSubcat = "";
+              document
+                .querySelectorAll(".cat-filter")
+                .forEach((c) => (c.checked = false));
+              applyFilters();
+            }
+          });
+
+        document.querySelectorAll(".cat-filter").forEach((cb) => {
+          cb.addEventListener("change", function () {
+            document.getElementById("cat-all").checked = false;
+            if (this.checked) {
+              document.querySelectorAll(".cat-filter").forEach((c) => {
+                if (c !== this) c.checked = false;
+              });
+              currentCat = this.dataset.cat;
+            } else {
+              currentCat = "";
+            }
+            currentSubcat = "";
+            currentPage = 1;
+            applyFilters();
+          });
+        });
+      }
+
+      // Show category header with subcategories
+      function showCategoryHeader(catId) {
+        const cat = CATEGORIES.find((c) => c.id === catId);
+        const subs = SUBCATEGORIES[catId] || [];
+        const hdr = document.getElementById("category-header-card");
+        if (!cat || !subs.length) {
+          hdr.style.display = "none";
+          return;
+        }
+        hdr.style.display = "flex";
+        document.getElementById("cat-hdr-icon").textContent = cat.icon;
+        document.getElementById("cat-hdr-name").textContent = cat.name;
+        document.getElementById("cat-hdr-desc").textContent =
+          `${cat.count} pièces disponibles dans cette catégorie`;
+
+        const subsList = document.getElementById("subcats-list");
+        subsList.innerHTML =
+          `<div class="subcat-chip ${!currentSubcat ? "active" : ""}" onclick="filterBySubcat('')">Tout voir</div>` +
+          subs
+            .map(
+              (
+                s,
+              ) => `<div class="subcat-chip ${currentSubcat === s ? "active" : ""}" onclick="filterBySubcat('${s.replace(/'/g, "\\'")}')">
+      ${s}
+    </div>`,
+            )
+            .join("");
+      }
+
+      window.filterBySubcat = function (sub) {
+        currentSubcat = sub;
+        currentPage = 1;
+        applyFilters();
+        // Update chips
+        document
+          .querySelectorAll("#subcats-list .subcat-chip")
+          .forEach((chip) => {
+            chip.classList.toggle(
+              "active",
+              (chip.textContent.trim() === "Tout voir" && !sub) ||
+                chip.textContent.trim() === sub,
+            );
+          });
+      };
+
+      function applyFilters() {
+        const query = (
+          document.getElementById("sidebar-search")?.value || currentQuery
+        ).toLowerCase();
+        const sort =
+          document.getElementById("sort-select")?.value || currentSort;
+        const pmax = parseFloat(
+          document.getElementById("price-max")?.value || 300,
+        );
+        const sOnly =
+          document.getElementById("filter-stock")?.checked !== false;
+        const rMin = parseFloat(
+          document.getElementById("filter-rating")?.value || 0,
+        );
+
+        let filtered = PRODUCTS.filter((p) => {
+          if (currentCat && p.cat !== currentCat) return false;
+          if (currentSubcat && p.subcat !== currentSubcat) return false;
+          if (
+            query &&
+            !p.name.toLowerCase().includes(query) &&
+            !p.ref.toLowerCase().includes(query) &&
+            !p.subcat.toLowerCase().includes(query)
+          )
+            return false;
+          if (p.price > pmax) return false;
+          if (sOnly && p.stock === 0) return false;
+          if (p.rating < rMin) return false;
+          return true;
+        });
+
+        switch (sort) {
+          case "popular":
+            filtered.sort((a, b) => b.reviews - a.reviews);
+            break;
+          case "rating":
+            filtered.sort((a, b) => b.rating - a.rating);
+            break;
+          case "price-asc":
+            filtered.sort((a, b) => a.price - b.price);
+            break;
+          case "price-desc":
+            filtered.sort((a, b) => b.price - a.price);
+            break;
+          case "newest":
+            filtered.reverse();
+            break;
+        }
+
+        document.getElementById("results-num").textContent = filtered.length;
+
+        // Show category header
+        if (currentCat) {
+          showCategoryHeader(currentCat);
+          // Update page title
+          const cat = CATEGORIES.find((c) => c.id === currentCat);
+          if (cat) {
+            document.getElementById("page-title").innerHTML =
+              `${cat.icon} <span>${cat.name}</span>`;
+            document.getElementById("breadcrumb-current").textContent =
+              cat.name;
+          }
+        } else {
+          document.getElementById("category-header-card").style.display =
+            "none";
+          document.getElementById("page-title").innerHTML =
+            "Notre <span>Boutique</span>";
+          document.getElementById("breadcrumb-current").textContent =
+            "Boutique";
+        }
+
+        // Paginate
+        const total = filtered.length;
+        const pages = Math.ceil(total / PAGE_SIZE);
+        const paged = filtered.slice(
+          (currentPage - 1) * PAGE_SIZE,
+          currentPage * PAGE_SIZE,
+        );
+
+        renderProducts("shop-grid", paged);
+        renderPagination(pages);
+      }
+
+      function renderPagination(pages) {
+        const container = document.getElementById("pagination");
+        if (pages <= 1) {
+          container.innerHTML = "";
+          return;
+        }
+        let html = "";
+        for (let i = 1; i <= pages; i++) {
+          html += `<button onclick="goPage(${i})" style="width:38px;height:38px;background:${i === currentPage ? "var(--red)" : "var(--black-card)"};border:1px solid rgba(255,255,255,${i === currentPage ? "0.3" : "0.08"});border-radius:var(--radius);color:white;cursor:pointer;font-family:var(--font-display);font-weight:700;transition:var(--transition)">${i}</button>`;
+        }
+        container.innerHTML = html;
+      }
+
+      window.goPage = function (p) {
+        currentPage = p;
+        applyFilters();
+        document
+          .getElementById("section-shop")
+          .scrollIntoView({ behavior: "smooth" });
+      };
+
+      // Build categories section
+      function buildAllCats() {
+        const container = document.getElementById("all-cats-grid");
+        container.innerHTML = CATEGORIES.map((cat) => {
+          const subs = SUBCATEGORIES[cat.id] || [];
+          return `
+      <div style="background:var(--black-card);border:1px solid rgba(255,255,255,0.06);border-radius:var(--radius-lg);overflow:hidden;transition:var(--transition)" 
+           onmouseover="this.style.borderColor='rgba(229,57,53,0.3)'" onmouseout="this.style.borderColor='rgba(255,255,255,0.06)'">
+        <div style="background:linear-gradient(135deg,var(--black-mid),#1a0000);padding:24px;display:flex;align-items:center;gap:16px;cursor:pointer" onclick="selectCategory('${cat.id}')">
+          <div style="font-size:2.5rem;width:60px;height:60px;background:rgba(229,57,53,0.12);border-radius:12px;display:flex;align-items:center;justify-content:center">${cat.icon}</div>
+          <div>
+            <div style="font-family:var(--font-display);font-weight:800;font-size:1.2rem;text-transform:uppercase">${cat.name}</div>
+            <div style="font-size:0.85rem;color:var(--gray-dark)">${cat.count} produits</div>
+          </div>
+        </div>
+        <div style="padding:16px 24px;display:flex;flex-wrap:wrap;gap:6px">
+          ${subs
+            .slice(0, 5)
+            .map(
+              (s) =>
+                `<button onclick="selectSubcat('${cat.id}','${s.replace(/'/g, "\\'")}');event.stopPropagation()" style="padding:4px 12px;background:var(--black-mid);border:1px solid rgba(255,255,255,0.06);border-radius:20px;color:var(--gray-dark);font-size:0.8rem;cursor:pointer;transition:var(--transition)" onmouseover="this.style.background='var(--red)';this.style.color='white'" onmouseout="this.style.background='var(--black-mid)';this.style.color='var(--gray-dark)'">${s}</button>`,
+            )
+            .join("")}
+          ${subs.length > 5 ? `<button onclick="selectCategory('${cat.id}')" style="padding:4px 12px;background:transparent;border:1px solid var(--red);border-radius:20px;color:var(--red);font-size:0.8rem;cursor:pointer">+${subs.length - 5} autres</button>` : ""}
+        </div>
+      </div>`;
+        }).join("");
+      }
+
+      window.selectCategory = function (catId) {
+        currentCat = catId;
+        currentSubcat = "";
+        currentPage = 1;
+        switchSection("shop");
+        document.getElementById("tab-shop").classList.add("active");
+        buildCatFilters();
+        applyFilters();
+      };
+
+      window.selectSubcat = function (catId, sub) {
+        currentCat = catId;
+        currentSubcat = sub;
+        currentPage = 1;
+        switchSection("shop");
+        document.getElementById("tab-shop").classList.add("active");
+        buildCatFilters();
+        applyFilters();
+      };
+
+      // Compat section
+      function initCompatSection() {
+        const brandSel = document.getElementById("compat-brand");
+        const modelSel = document.getElementById("compat-model");
+        const yearSel = document.getElementById("compat-year");
+        const catSel = document.getElementById("compat-cat");
+
+        BRANDS.forEach((b) => {
+          brandSel.innerHTML += `<option value="${b}">${b}</option>`;
+        });
+        YEARS.forEach((y) => {
+          yearSel.innerHTML += `<option value="${y}">${y}</option>`;
+        });
+        CATEGORIES.forEach((c) => {
+          catSel.innerHTML += `<option value="${c.id}">${c.icon} ${c.name}</option>`;
+        });
+
+        brandSel.addEventListener("change", () => {
+          const brand = brandSel.value;
+          modelSel.innerHTML = '<option value="">Choisir...</option>';
+          if (brand && MODELS[brand]) {
+            MODELS[brand].forEach((m) => {
+              modelSel.innerHTML += `<option value="${m}">${m}</option>`;
+            });
+          }
+        });
+
+        document
+          .getElementById("compat-search-btn")
+          .addEventListener("click", () => {
+            const brand = brandSel.value;
+            const cat = catSel.value;
+            let results = PRODUCTS;
+            if (brand)
+              results = results.filter((p) =>
+                p.compat.some(
+                  (c) =>
+                    c.includes(brand) ||
+                    c === "Tous modèles" ||
+                    c === "Universel",
+                ),
+              );
+            if (cat) results = results.filter((p) => p.cat === cat);
+            renderProducts("compat-results", results);
+            if (!results.length) {
+              document.getElementById("compat-results").innerHTML =
+                `<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">🔍</div><div class="empty-title">Aucune pièce trouvée</div><div class="empty-desc">Essayez d'autres critères de recherche</div></div>`;
+            }
+          });
+      }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        const params = getParams();
+        currentCat = params.cat;
+        currentQuery = params.q;
+
+        buildCatFilters();
+        buildAllCats();
+        initCompatSection();
+
+        // Price range
+        const priceRange = document.getElementById("price-max");
+        const priceVal = document.getElementById("price-val");
+        priceRange.addEventListener("input", () => {
+          priceVal.textContent = priceRange.value + " €";
+        });
+
+        // Search
+        document
+          .getElementById("sidebar-search")
+          .addEventListener("input", () => {
+            currentPage = 1;
+            applyFilters();
+          });
+
+        document
+          .getElementById("sort-select")
+          .addEventListener("change", () => {
+            currentPage = 1;
+            applyFilters();
+          });
+
+        document
+          .getElementById("apply-filters")
+          .addEventListener("click", () => {
+            currentPage = 1;
+            applyFilters();
+          });
+
+        document
+          .getElementById("reset-filters")
+          .addEventListener("click", () => {
+            currentCat = "";
+            currentSubcat = "";
+            currentPage = 1;
+            document.getElementById("sidebar-search").value = "";
+            document.getElementById("price-max").value = 300;
+            document.getElementById("price-val").textContent = "300 €";
+            document.getElementById("filter-stock").checked = true;
+            document.getElementById("filter-rating").value = "0";
+            buildCatFilters();
+            applyFilters();
+          });
+
+        document
+          .getElementById("view-grid")
+          .addEventListener("click", function () {
+            document.getElementById("shop-grid").style.gridTemplateColumns = "";
+            this.classList.add("active");
+            document.getElementById("view-list").classList.remove("active");
+          });
+
+        document
+          .getElementById("view-list")
+          .addEventListener("click", function () {
+            document.getElementById("shop-grid").style.gridTemplateColumns =
+              "1fr";
+            this.classList.add("active");
+            document.getElementById("view-grid").classList.remove("active");
+          });
+
+        // Switch section from URL
+        if (params.section === "categories") {
+          switchSection("categories");
+        } else if (params.section === "compat") {
+          switchSection("compat");
+        } else {
+          switchSection("shop");
+        }
+
+        // If brand param, populate compat
+        if (params.brand) {
+          switchSection("compat");
+          document.getElementById("compat-brand").value = params.brand;
+          document
+            .getElementById("compat-brand")
+            .dispatchEvent(new Event("change"));
+          setTimeout(
+            () => document.getElementById("compat-search-btn").click(),
+            100,
+          );
+        }
+
+        applyFilters();
+      });
+    </script>
+  </body>
+</html>
